@@ -2,163 +2,173 @@
 
 FixIt is a full-stack local home-services booking platform that connects customers with service professionals such as electricians, plumbers, cleaners, and other local service providers.
 
-The project was developed in stages. The frontend was initially developed as a React/Vite application, and during Week 4 it was integrated with the Node.js/Express backend and MongoDB database developed in Week 3.
+The application provides a React-based frontend connected to a Node.js/Express REST API and MongoDB Atlas database. Customers can browse service professionals, search and filter professionals, view professional details, authenticate using JWT-based login, create bookings, view their bookings, and cancel bookings.
 
-The current application supports real API communication, authentication, professional discovery, professional details, booking creation, booking retrieval, booking cancellation, loading states, validation, error handling, and authenticated user interactions.
+The backend provides authentication, authorization, validation, CRUD operations, ownership checks, centralized error handling, and database interaction through Mongoose.
 
 ---
 
-## Week 4 — Frontend and Backend Integration
+## Features
 
-The main objective of Week 4 was to integrate the React frontend with the backend REST APIs and create a functional full-stack application.
+### Customer Features
 
-The frontend no longer depends on mock professional data for the main service-discovery and booking flows. It communicates with the backend using the browser Fetch API.
+- Browse available service professionals
+- View professional name, service, description, rating, price, and location
+- Search professionals by name or service information
+- Filter professionals by service category
+- Sort professionals by available sorting options
+- View detailed professional profiles
+- Submit service booking requests
+- View authenticated user's bookings
+- View booking status
+- Cancel bookings
+- Login and logout functionality
+- Client-side form validation
+- Loading and error states
+- Responsive user interface
 
-### Integration Flow
+### Professional Features
+
+- Professional accounts can be registered
+- Authenticated professionals can create professional listings
+- Professional ownership is checked before modifying or deleting listings
+- Professional data is stored in MongoDB
+- Professional listings are retrieved dynamically through REST APIs
+
+### Backend Features
+
+- RESTful API architecture
+- JWT authentication
+- Role-based authorization
+- Password hashing with bcryptjs
+- MongoDB Atlas database
+- Mongoose schemas and validation
+- CRUD operations
+- Request validation with express-validator
+- ObjectId validation
+- Ownership checks
+- Centralized error handling
+- Environment-variable configuration
+- CORS configuration
+- Automated API testing with Jest and Supertest
+
+---
+
+## Technology Stack
+
+### Frontend
+
+- React 19
+- Vite
+- React Router
+- Tailwind CSS
+- Lucide React
+- JavaScript / JSX
+- Browser Fetch API
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Mongoose
+- JSON Web Tokens (JWT)
+- bcryptjs
+- express-validator
+- dotenv
+- CORS
+
+### Testing
+
+- Jest
+- Supertest
+- VS Code REST Client
+- Manual browser-based integration testing
+
+---
+
+## System Architecture
+
+The application follows a separation-of-concerns architecture.
 
 ```text
-Customer
-   ↓
-React Frontend
-   ↓
-Fetch API
-   ↓
-Express REST API
-   ↓
-Authentication / Validation / Authorization
-   ↓
-Mongoose
-   ↓
-MongoDB Atlas
+                         FIXIT FULL-STACK APPLICATION
 
-For protected operations:
+┌─────────────────────────────────────────────────────────────┐
+│                     React Frontend                          │
+│                                                             │
+│  Pages       Components       Context       Fetch API        │
+│  Landing     Navbar           AppContext    HTTP Requests   │
+│  Login       ProfessionalCard                                │
+│  Detail      StatusStepper                                   │
+│  Dashboard   Footer                                          │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           │ HTTP / JSON
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Express REST API                         │
+│                                                             │
+│  Routes → Middleware → Controllers → Models                 │
+│                                                             │
+│  Authentication                                             │
+│  Authorization                                              │
+│  Validation                                                 │
+│  Error Handling                                             │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           │ Mongoose
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     MongoDB Atlas                           │
+│                                                             │
+│  Users                                                      │
+│  Professionals                                              │
+│  Bookings                                                   │
+└─────────────────────────────────────────────────────────────┘
+```
 
+### Protected Request Flow
+
+```text
 React Frontend
-   ↓
-JWT Token
-   ↓
-Authorization: Bearer <token>
-   ↓
-Express Authentication Middleware
-   ↓
+      ↓
+User Login
+      ↓
+POST /api/auth/login
+      ↓
+Express Authentication
+      ↓
+JWT Generated
+      ↓
+JWT Stored on Client
+      ↓
+Protected API Request
+      ↓
+Authorization: Bearer <JWT>
+      ↓
+Authentication Middleware
+      ↓
+Role / Ownership Checks
+      ↓
 Controller
-   ↓
-MongoDB
-Frontend and Backend Responsibilities
-Frontend
-
-The React frontend is responsible for:
-
-User interface and responsive presentation
-Client-side navigation using React Router
-Form interaction and user input handling
-Client-side validation
-Loading states during API requests
-Displaying user-friendly error messages
-Communicating with backend APIs using the Fetch API
-Fetching and displaying professional data
-Fetching and displaying booking data
-Managing authentication state on the client
-Storing the JWT token for authenticated requests
-Sending JWT tokens with protected API requests
-Displaying booking status information
-Providing customer feedback after successful or failed operations
-Backend
-
-The Node.js and Express backend is responsible for:
-
-User authentication
-JWT generation and verification
-Role-based authorization
-Request and input validation
-MongoDB database operations through Mongoose
-Booking creation, retrieval, update, and cancellation
-Professional listing management
-Professional ownership checks
-Booking ownership checks
-Centralized error handling
-Secure password hashing using bcryptjs
-Returning structured JSON API responses
-Technology Stack
-Frontend
-React 19
-Vite
-React Router
-Tailwind CSS
-Lucide React
-Browser Fetch API
-JavaScript / JSX
-Backend
-Node.js
-Express.js
-MongoDB Atlas
+      ↓
 Mongoose
-JSON Web Tokens (JWT)
-bcryptjs
-express-validator
-dotenv
-CORS
-Testing
-Jest
-Supertest
-VS Code REST Client
-Project Architecture
+      ↓
+MongoDB Atlas
+      ↓
+JSON Response
+      ↓
+React UI Update
+```
 
-The project follows a separation-of-concerns architecture.
+---
 
-Frontend Architecture
-React Application
-│
-├── Components
-│   ├── Navbar
-│   ├── Footer
-│   ├── ProfessionalCard
-│   ├── StarRating
-│   └── StatusStepper
-│
-├── Pages
-│   ├── Landing
-│   ├── Login
-│   ├── ProfessionalDetail
-│   └── Dashboard
-│
-├── Context
-│   └── AppContext
-│
-├── Data
-│   └── mockData
-│
-└── API Communication
-    └── Fetch API
-Backend Architecture
-Express Application
-│
-├── Routes
-│   ├── Auth Routes
-│   ├── Professional Routes
-│   └── Booking Routes
-│
-├── Controllers
-│   ├── Auth Controller
-│   ├── Professional Controller
-│   └── Booking Controller
-│
-├── Models
-│   ├── User
-│   ├── Professional
-│   └── Booking
-│
-├── Middleware
-│   ├── Authentication
-│   ├── Validation
-│   └── Error Handling
-│
-└── Database
-    └── MongoDB Atlas
+## Frontend Architecture
 
-This structure keeps UI logic, API communication, business logic, database logic, validation, and authentication responsibilities separated.
+The frontend is organized using React components, pages, shared context, and reusable UI elements.
 
-Frontend Project Structure
+```text
 fixit-frontend/
 ├── public/
 ├── src/
@@ -168,23 +178,18 @@ fixit-frontend/
 │   │   ├── ProfessionalCard.jsx
 │   │   ├── StarRating.jsx
 │   │   └── StatusStepper.jsx
-│   │
 │   ├── context/
 │   │   └── AppContext.jsx
-│   │
 │   ├── data/
 │   │   └── mockData.js
-│   │
 │   ├── pages/
 │   │   ├── Dashboard.jsx
 │   │   ├── Landing.jsx
 │   │   ├── Login.jsx
 │   │   └── ProfessionalDetail.jsx
-│   │
 │   ├── App.jsx
 │   ├── index.css
 │   └── main.jsx
-│
 ├── .gitignore
 ├── eslint.config.js
 ├── index.html
@@ -193,550 +198,895 @@ fixit-frontend/
 ├── tailwind.config.js
 ├── vite.config.js
 └── README.md
-Backend Project Structure
+```
+
+### Frontend Responsibilities
+
+The React frontend is responsible for:
+
+- Rendering the user interface
+- Client-side navigation
+- Displaying API data
+- Handling user input
+- Client-side validation
+- Sending asynchronous API requests
+- Managing loading states
+- Managing error states
+- Managing authentication state
+- Storing the JWT token on the client
+- Sending JWT tokens with protected requests
+- Displaying booking information
+- Displaying booking status
+- Updating the UI after successful operations
+- Providing responsive layouts for different screen sizes
+
+---
+
+## Backend Architecture
+
+The backend follows a controller-based structure with separate routes, models, middleware, and configuration.
+
+```text
 fixit-backend/
 ├── src/
 │   ├── config/
 │   │   └── database.js
-│   │
 │   ├── controllers/
 │   │   ├── authController.js
 │   │   ├── professionalController.js
 │   │   └── bookingController.js
-│   │
 │   ├── middleware/
 │   │   ├── authMiddleware.js
 │   │   ├── errorMiddleware.js
 │   │   └── validationMiddleware.js
-│   │
 │   ├── models/
 │   │   ├── User.js
 │   │   ├── Professional.js
 │   │   └── Booking.js
-│   │
 │   ├── routes/
 │   │   ├── authRoutes.js
 │   │   ├── professionalRoutes.js
 │   │   └── bookingRoutes.js
-│   │
 │   ├── app.js
 │   └── server.js
-│
 ├── tests/
-│   ├── auth.test.js
-│   ├── bookings.test.js
-│   ├── professionals.test.js
-│   └── helpers/
-│       └── db.js
-│
 ├── docs/
 │   └── API.md
-│
 ├── .env.example
 ├── .gitignore
 ├── package.json
-├── README.md
-└── test-api.http
-API Integration
+└── README.md
+```
 
-The frontend communicates with the backend through the following environment variable:
+### Separation of Concerns
 
-VITE_API_URL=http://localhost:5000/api
+The backend separates responsibilities into different layers:
 
-The frontend uses:
+**Routes**
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+Define API endpoints and connect requests to middleware and controllers.
 
-This allows the API base URL to be configured without hard-coding the backend address throughout the application.
+**Middleware**
 
-Authentication Integration
+Handles authentication, authorization, validation, and error processing.
 
-The authentication flow connects the React login page with the backend authentication API.
+**Controllers**
 
-Login Flow
-User enters email and password
-        ↓
-React Login Page
-        ↓
-POST /api/auth/login
-        ↓
-Express Authentication Controller
-        ↓
-User lookup in MongoDB
-        ↓
-Password verification using bcryptjs
-        ↓
-JWT generated
-        ↓
-Token returned to frontend
-        ↓
-Token stored in localStorage
-        ↓
-User redirected to Dashboard
+Contain application logic and coordinate database operations.
 
-The frontend stores:
+**Models**
 
-fixit_token
-fixit_user
+Define MongoDB document structures and validation rules.
 
-The JWT is then included in authenticated API requests:
+**Configuration**
 
-Authorization: Bearer <JWT_TOKEN>
+Contains database and environment configuration.
 
-The backend verifies the token before allowing protected operations.
+This structure makes the application easier to maintain, test, debug, and extend.
 
-Professional Integration
+---
 
-The landing page retrieves professionals from the backend instead of relying on hard-coded professional records for the main browsing flow.
+## Database Design
 
-Get Professionals
-GET /api/professionals
+MongoDB Atlas is used as the application's database.
 
-The frontend requests the data and displays:
+### User Collection
 
-Professional name
-Service category
-Description
-Location
-Rating
-Price
-Availability
+The User model contains:
 
-The frontend maps backend MongoDB _id values to the UI professional ID so that each professional can be opened through its detail page.
+- `name`
+- `email`
+- `password`
+- `role`
+- `createdAt`
+- `updatedAt`
 
-Professional Detail Integration
+Supported roles:
 
-When a customer selects a professional, the frontend requests the individual professional record.
+```text
+customer
+professional
+admin
+```
 
-GET /api/professionals/:id
+Passwords are hashed using bcryptjs before being stored.
 
-The Professional Detail page displays backend data and provides the booking form.
+---
 
-The page includes:
+### Professional Collection
 
-Professional information
-Service information
-Location
-Rating
-Price
-Availability
-Booking date
-Booking time
-Service address
-Issue description
+The Professional model contains:
 
-The page also displays loading and error states while communicating with the backend.
+- `user`
+- `name`
+- `service`
+- `description`
+- `location`
+- `rating`
+- `price`
+- `availability`
+- `createdAt`
+- `updatedAt`
 
-Booking Integration
+The `user` field associates a professional listing with its owner.
 
-Bookings are created through the backend API.
+---
 
-POST /api/bookings
+### Booking Collection
 
-The booking request is sent from the React application after the customer submits the booking form.
+The Booking model contains:
 
-The request includes information such as:
+- `user`
+- `professional`
+- `service`
+- `date`
+- `time`
+- `address`
+- `issue`
+- `status`
+- `createdAt`
+- `updatedAt`
 
-Professional
-Service
-Date
-Time
-Address
-Issue
+Booking status values are:
 
-The backend validates the request, verifies authentication, checks the referenced records, and stores the booking in MongoDB.
-
-Booking Retrieval
-
-Authenticated customers can retrieve their bookings using:
-
-GET /api/bookings
-
-The frontend sends the JWT token with the request.
-
-The Dashboard displays backend booking records including:
-
-Booking ID
-Professional
-Service
-Date
-Time
-Address
-Issue
-Booking status
-
-The Dashboard uses the backend response as the main source for displaying current bookings.
-
-Booking Cancellation
-
-Customers can cancel a booking using:
-
-DELETE /api/bookings/:id
-
-The frontend sends the authenticated request.
-
-After cancellation, the Dashboard refreshes the booking data from the backend so that the UI reflects the latest server state.
-
-Booking Status Integration
-
-The backend uses these booking statuses:
-
+```text
 pending
 confirmed
 completed
 cancelled
+```
 
-The frontend maps backend statuses to user-friendly labels:
+---
 
-pending    → Requested
-confirmed  → Accepted
-completed  → Completed
-cancelled  → Cancelled
+## API Endpoints
 
-The StatusStepper component visually represents the current booking state.
+### Authentication
 
-This mapping allows the backend to maintain consistent database values while the frontend displays customer-friendly terminology.
+| Method | Endpoint | Description | Authentication |
+|---|---|---|---|
+| POST | `/api/auth/register` | Register a new user | Public |
+| POST | `/api/auth/login` | Authenticate user and return JWT | Public |
 
-State Management
+### Professionals
 
-The application uses React state and context for frontend state management.
+| Method | Endpoint | Description | Authentication |
+|---|---|---|---|
+| GET | `/api/professionals` | Get all professionals | Public |
+| GET | `/api/professionals/:id` | Get one professional | Public |
+| POST | `/api/professionals` | Create professional listing | Professional/Admin |
+| PUT | `/api/professionals/:id` | Update professional listing | Owner/Admin |
+| DELETE | `/api/professionals/:id` | Delete professional listing | Owner/Admin |
 
-The AppContext manages booking-related actions and application-level data.
+### Bookings
 
-Important state includes:
+| Method | Endpoint | Description | Authentication |
+|---|---|---|---|
+| POST | `/api/bookings` | Create a booking | Authenticated |
+| GET | `/api/bookings` | Get authenticated user's bookings | Authenticated |
+| GET | `/api/bookings/:id` | Get one booking | Authenticated |
+| PUT | `/api/bookings/:id` | Update a booking | Authenticated |
+| DELETE | `/api/bookings/:id` | Cancel/delete a booking | Authenticated |
 
-Booking information
-Loading state
-Error state
-Authentication-related local storage values
+---
 
-For API operations, components maintain appropriate loading and error states.
+## API Integration
 
-Example flow:
+The frontend communicates with the backend using the browser's native Fetch API.
 
-User Action
-    ↓
-Set loading = true
-    ↓
-Send API request
-    ↓
-Receive response
-    ↓
-Update React state
-    ↓
-Display result
-    ↓
-Set loading = false
+The API base URL is configured through the Vite environment variable:
 
-This prevents the interface from appearing unresponsive during asynchronous operations.
-
-Error Handling
-
-The application handles errors at both frontend and backend levels.
-
-Frontend
-
-The frontend checks the HTTP response and displays meaningful messages when requests fail.
-
-Examples include:
-
-Invalid login credentials
-Failed professional loading
-Failed booking creation
-Failed booking retrieval
-Failed cancellation
-Missing authentication token
-Validation errors
-
-Loading and retry states are also provided where appropriate.
-
-Backend
-
-The backend uses:
-
-Request validation
-HTTP status codes
-Controller-level error handling
-Centralized error middleware
-MongoDB/Mongoose validation
-Invalid ObjectId handling
-Authentication checks
-Authorization checks
-
-Common response codes include:
-
-200 - Successful request
-201 - Resource created
-400 - Invalid request
-401 - Authentication required or invalid
-403 - Access denied
-404 - Resource not found
-500 - Server error
-Validation
-
-Frontend validation is used to provide immediate feedback to users before API requests are sent.
-
-Examples include:
-
-Required fields
-Email validation
-Password validation
-Booking date validation
-Booking time validation
-Address validation
-Issue description validation
-
-The backend also validates incoming data using express-validator and Mongoose schema validation.
-
-Backend validation is treated as the final security and data-integrity layer because client-side validation can be bypassed.
-
-Security
-
-Several security practices were implemented.
-
-Password Security
-
-Passwords are hashed using bcryptjs before being stored in MongoDB.
-
-Plain-text passwords are not stored in the database.
-
-JWT Authentication
-
-JWT tokens are used to authenticate protected requests.
-
-Protected endpoints verify the token before processing requests.
-
-Authorization
-
-Role-based access control is implemented for protected professional operations.
-
-Ownership checks are also used to prevent users from modifying resources that do not belong to them.
-
-Environment Variables
-
-Sensitive configuration values are stored in .env.
-
-Example:
-
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-
-The .env file is excluded from Git using .gitignore.
-
-Only .env.example is included for configuration reference.
-
-Registration Security
-
-The registration endpoint does not allow a customer to freely assign a privileged role through the request body.
-
-Database Validation
-
-Mongoose schemas validate important fields before data is stored.
-
-API Endpoints
-Authentication
-Method	Endpoint	Purpose
-POST	/api/auth/register	Register a user
-POST	/api/auth/login	Authenticate a user and return JWT
-Professionals
-Method	Endpoint	Purpose
-GET	/api/professionals	Get all professionals
-GET	/api/professionals/:id	Get one professional
-POST	/api/professionals	Create a professional
-PUT	/api/professionals/:id	Update a professional
-DELETE	/api/professionals/:id	Delete a professional
-Bookings
-Method	Endpoint	Purpose
-POST	/api/bookings	Create a booking
-GET	/api/bookings	Get authenticated user's bookings
-GET	/api/bookings/:id	Get one booking
-PUT	/api/bookings/:id	Update a booking
-DELETE	/api/bookings/:id	Cancel/delete a booking
-Local Setup
-
-The project uses separate frontend and backend applications.
-
-Both applications must be running for the complete full-stack application to work.
-
-Backend Setup
-
-Navigate to the backend project:
-
-cd C:\Users\syedu\OneDrive\Desktop\fixit-backend
-
-Install dependencies:
-
-npm install
-
-Create a .env file:
-
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-
-Start the backend:
-
-npm start
-
-For development:
-
-npm run dev
-
-The backend runs on:
-
-http://localhost:5000
-
-Health endpoint:
-
-http://localhost:5000/api/health
-Frontend Setup
-
-The actual frontend Vite project is located inside the Week 2 wrapper folder.
-
-Navigate to:
-
-cd C:\Users\syedu\OneDrive\Desktop\FixIt_Week2_Frontend\fixit-frontend
-
-Install dependencies:
-
-npm install
-
-Create a .env file:
-
+```text
 VITE_API_URL=http://localhost:5000/api
+```
 
-Start the frontend:
+Example request:
 
-npm run dev
+```javascript
+const response = await fetch(`${API_URL}/professionals`);
+const data = await response.json();
+```
 
-Vite will provide the local frontend address, normally:
+Protected requests include the JWT:
 
-http://localhost:5173
-Running the Full Application
+```javascript
+const response = await fetch(`${API_URL}/bookings`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+```
 
-Start the backend first:
+This keeps the API URL configurable without hard-coding it throughout the application.
 
-cd C:\Users\syedu\OneDrive\Desktop\fixit-backend
-npm run dev
+---
 
-Then open another terminal and start the frontend:
+## Dynamic Professional Data
 
-cd C:\Users\syedu\OneDrive\Desktop\FixIt_Week2_Frontend\fixit-frontend
-npm run dev
+Professional listings are retrieved from the backend instead of being hard-coded into the main discovery flow.
 
-Then open the frontend URL shown by Vite.
+The frontend requests:
 
-The application requires both servers to be running because:
+```text
+GET /api/professionals
+```
 
-Frontend → http://localhost:5173
-Backend  → http://localhost:5000
-Database → MongoDB Atlas
-Testing
-Backend Automated Testing
+The backend retrieves the records from MongoDB Atlas and returns structured JSON.
 
-The backend uses Jest and Supertest.
-
-Run:
-
-npm test
-
-The completed backend test suite contains:
-
-3 test suites
-25 tests
-25 passed
-0 failed
-
-The tests cover authentication, professionals, bookings, validation, authorization, and protected operations.
-
-Frontend Production Build
-
-The frontend was tested using the production build command:
-
-npm run build
-
-The build completed successfully.
-
-The Vite production build generated the dist directory without build errors.
-
-Manual Full-Stack Integration Test
-
-The complete customer flow was manually tested through the browser.
-
-Test Flow
-1. Open FixIt frontend
-        ↓
-2. Backend professionals appear on landing page
-        ↓
-3. Select a professional
-        ↓
-4. Professional details are loaded from backend
-        ↓
-5. Log in with a registered customer account
-        ↓
-6. JWT is stored in the browser
-        ↓
-7. Create a booking
-        ↓
-8. Booking is saved in MongoDB
-        ↓
-9. Dashboard retrieves booking from backend
-        ↓
-10. Booking status is displayed
-        ↓
-11. Cancel booking
-        ↓
-12. Dashboard refreshes from backend
-        ↓
-13. Booking is removed/cancelled
-        ↓
-14. Log out
-        ↓
-15. User is returned to Login
-
-This confirmed that the major frontend-to-backend integration points work together.
-
-Challenges and Solutions
-Challenge 1 — Frontend initially displayed a blank page
-
-The frontend initially produced an invalid React hook error.
-
-The issue was traced to an additional nested src/node_modules directory, which caused React dependencies to be resolved incorrectly.
-
-The nested dependency directory was removed and the Vite cache was cleared.
-
-After restarting the development server, the application loaded correctly.
-
-Challenge 2 — Frontend professional data used a different data structure
-
-The original frontend was designed around mock professional objects, while the backend returned MongoDB professional documents.
-
-The solution was to map backend fields into the structure expected by the existing UI components.
+The frontend maps the backend response into the UI model used by `ProfessionalCard`.
 
 For example:
 
-Backend _id
-      ↓
-Frontend professional id
+```text
+MongoDB
+   ↓
+Professional Model
+   ↓
+Professional Controller
+   ↓
+GET /api/professionals
+   ↓
+Landing.jsx
+   ↓
+ProfessionalCard.jsx
+   ↓
+User Interface
+```
 
-Backend service
-      ↓
-Frontend categoryLabel
+The application was manually verified with multiple professionals, including electrical and plumbing service providers.
 
-Backend price
-      ↓
-Frontend hourlyRate
+---
 
-This allowed the existing UI components to continue working while using real backend data.
+## Search, Filtering, and Sorting
 
-Challenge 3 — Booking data structure mismatch
+The landing page supports client-side discovery features using the professional data returned by the backend.
 
-The original Dashboard expected frontend mock booking data.
+### Search
 
-The backend returned MongoDB booking objects containing fields such as:
+Users can search professionals by relevant displayed information.
 
+Example:
+
+```text
+Search: Rahul
+```
+
+The application correctly filters the results to Rahul Plumber.
+
+### Service Filtering
+
+The application supports service categories such as:
+
+```text
+Electrical
+Plumbing
+```
+
+The frontend dynamically filters the professionals currently loaded from the backend.
+
+### Sorting
+
+The application supports sorting options such as lowest price.
+
+Example current data:
+
+```text
+Rahul Plumber       ₹450
+John Electrician    ₹500
+Booking Test        ₹700
+```
+
+Selecting lowest price places Rahul Plumber first.
+
+---
+
+## Authentication and Authorization
+
+JWT-based authentication is used for protected API operations.
+
+### Authentication Flow
+
+```text
+User
+ ↓
+Login Form
+ ↓
+POST /api/auth/login
+ ↓
+Backend verifies email/password
+ ↓
+JWT generated
+ ↓
+Frontend stores token
+ ↓
+Token attached to protected requests
+```
+
+The JWT contains the authenticated user's ID and role.
+
+Example protected request:
+
+```text
+Authorization: Bearer <token>
+```
+
+### Password Security
+
+Passwords are never stored as plain text.
+
+The backend uses bcryptjs:
+
+```javascript
+const hashedPassword = await bcrypt.hash(password, 10);
+```
+
+During login, bcrypt compares the submitted password against the stored hash.
+
+### Role-Based Authorization
+
+Supported roles include:
+
+```text
+customer
+professional
+admin
+```
+
+Professional creation requires an authenticated professional or admin account.
+
+Admin privileges cannot be assigned through ordinary customer registration.
+
+---
+
+## Ownership and Authorization Checks
+
+The backend performs ownership checks for protected resources.
+
+For professional listings:
+
+- A professional can manage their own listing.
+- An admin can manage professional listings.
+- Unauthorized users cannot modify another professional's listing.
+
+For bookings:
+
+- Authenticated users can access their own booking records.
+- Booking access is restricted using the authenticated user identity.
+- Unauthorized access is rejected by the backend.
+
+These checks prevent users from simply changing an ID in the request and accessing another user's protected data.
+
+---
+
+## Validation
+
+Validation is implemented on both the frontend and backend.
+
+### Frontend Validation
+
+Examples include:
+
+- Required booking date
+- Required time
+- Required service address
+- Required issue description
+- Required login email
+- Required password
+
+### Backend Validation
+
+The backend uses:
+
+- express-validator
+- Mongoose schema validation
+- ObjectId validation
+- Required field validation
+- Enum validation
+- Numeric constraints
+
+This provides multiple layers of protection against invalid data.
+
+---
+
+## Error Handling
+
+The application handles API errors using appropriate HTTP status codes and user-facing messages.
+
+Examples include:
+
+```text
+400 Bad Request
+401 Unauthorized
+403 Forbidden
+404 Not Found
+409 Conflict
+500 Internal Server Error
+```
+
+The frontend displays appropriate error messages and provides retry or recovery options where applicable.
+
+Loading states are also displayed while asynchronous API requests are in progress.
+
+---
+
+## State Management
+
+The frontend uses React state and `AppContext` for shared application behavior.
+
+Important state includes:
+
+- Authentication information
+- Booking operations
+- Loading states
+- Error states
+- Booking persistence
+- API-related UI updates
+
+The Dashboard maintains its own fetched booking state so that the backend remains the source of truth for authenticated booking data.
+
+Authentication information is stored in browser local storage using:
+
+```text
+fixit_token
+fixit_user
+```
+
+The JWT is then used for protected API requests.
+
+---
+
+## Booking Data Flow
+
+The booking process follows this flow:
+
+```text
+Customer selects professional
+        ↓
+Professional detail page
+        ↓
+Customer enters booking information
+        ↓
+Frontend validation
+        ↓
+POST /api/bookings
+        ↓
+JWT authentication
+        ↓
+Backend validation
+        ↓
+Booking Controller
+        ↓
+Mongoose
+        ↓
+MongoDB Atlas
+        ↓
+Booking created
+        ↓
+JSON response
+        ↓
+Success message in React
+        ↓
+Dashboard displays booking
+```
+
+---
+
+## Booking Cancellation Flow
+
+The cancellation process follows:
+
+```text
+Dashboard
+   ↓
+Customer clicks Cancel
+   ↓
+Frontend sends DELETE request
+   ↓
+JWT authentication
+   ↓
+Backend checks booking ownership
+   ↓
+Booking cancelled/deleted
+   ↓
+API response
+   ↓
+Dashboard refreshes booking data
+```
+
+---
+
+## Testing
+
+The backend was tested using Jest and Supertest.
+
+Latest automated test results:
+
+```text
+Test Suites: 3 passed, 3 total
+Tests:       25 passed, 25 total
+Snapshots:   0 total
+```
+
+The three test suites cover:
+
+- Authentication
+- Professional APIs
+- Booking APIs
+
+The tests cover successful operations as well as validation, authentication, authorization, and error scenarios.
+
+---
+
+## Manual Integration Testing
+
+The application was also tested through the actual React user interface.
+
+The following flow was successfully verified:
+
+```text
+Open FixIt
+   ↓
+Load professionals from backend
+   ↓
+Search professionals
+   ↓
+Filter by service
+   ↓
+Sort by price
+   ↓
+Open professional detail
+   ↓
+Login
+   ↓
+Submit booking
+   ↓
+Booking created
+   ↓
+Open Dashboard
+   ↓
+View booking
+   ↓
+Cancel booking
+   ↓
+Booking removed/cancelled
+   ↓
+Logout
+```
+
+Additional dynamic-data verification was performed with multiple professional records.
+
+Current verified examples include:
+
+```text
+Booking Test Electrician
+John Electrician
+John Electrician
+Rahul Plumber
+```
+
+The frontend successfully displayed these records through the backend API.
+
+---
+
+## Production Build
+
+The frontend production build was successfully generated using Vite.
+
+Latest build result:
+
+```text
+vite v8.3.0 building client environment for production...
+
+1898 modules transformed.
+
+dist/index.html                   0.82 kB
+dist/assets/index-cUbw6cNy.css   14.12 kB
+dist/assets/index-B0dQrRsg.js   295.46 kB
+
+Build completed successfully.
+```
+
+Compressed sizes reported by Vite:
+
+```text
+JavaScript: approximately 92.32 kB gzip
+CSS: approximately 3.82 kB gzip
+```
+
+The build completed without errors.
+
+---
+
+## Security Practices
+
+The project includes several security-focused practices:
+
+- Password hashing with bcryptjs
+- JWT authentication
+- Protected API routes
+- Role-based authorization
+- Resource ownership checks
+- Environment variables for database credentials and JWT secrets
+- `.env` excluded through `.gitignore`
+- Client-supplied admin privileges are not accepted during ordinary registration
+- Input validation
+- ObjectId validation
+- Appropriate HTTP status codes
+- No password values returned in authentication responses
+- CORS configuration
+- Separation of authentication and business logic
+
+Sensitive configuration should never be committed to the repository.
+
+---
+
+## Environment Configuration
+
+### Backend `.env`
+
+Create a `.env` file inside the backend project:
+
+```text
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+Do not commit the real `.env` file.
+
+A safe example is provided through:
+
+```text
+.env.example
+```
+
+### Frontend `.env`
+
+Create a `.env` file inside the frontend project:
+
+```text
+VITE_API_URL=http://localhost:5000/api
+```
+
+Do not place private backend credentials or JWT secrets in the frontend environment.
+
+Only the public API base URL should be exposed through the Vite frontend environment.
+
+---
+
+## Local Setup
+
+### Prerequisites
+
+Install:
+
+- Node.js
+- npm
+- MongoDB Atlas account
+- Git
+- VS Code or another code editor
+
+---
+
+### Backend Installation
+
+Open a terminal and run:
+
+```bash
+cd C:\Users\syedu\OneDrive\Desktop\fixit-backend
+npm install
+```
+
+Create the backend `.env` file:
+
+```text
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+Start the backend:
+
+```bash
+npm run dev
+```
+
+Expected output:
+
+```text
+FixIt Backend Server running on port 5000
+MongoDB connected successfully
+```
+
+The API will be available at:
+
+```text
+http://localhost:5000
+```
+
+---
+
+### Frontend Installation
+
+Open another terminal:
+
+```bash
+cd C:\Users\syedu\OneDrive\Desktop\FixIt_Week2_Frontend\fixit-frontend
+npm install
+```
+
+Create the frontend `.env` file:
+
+```text
+VITE_API_URL=http://localhost:5000/api
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Vite will provide the local frontend address, normally:
+
+```text
+http://localhost:5173
+```
+
+---
+
+## Running Tests
+
+From the backend folder:
+
+```bash
+npm test
+```
+
+The configured test command runs:
+
+```bash
+jest --runInBand
+```
+
+Expected current result:
+
+```text
+3 test suites passed
+25 tests passed
+```
+
+---
+
+## Frontend Production Build
+
+From the frontend folder:
+
+```bash
+npm run build
+```
+
+The command creates the production files inside:
+
+```text
+dist/
+```
+
+A successful build confirms that the integrated frontend can be compiled for production.
+
+---
+
+## API Documentation
+
+Detailed endpoint documentation is available in:
+
+```text
+docs/API.md
+```
+
+The API documentation contains endpoint information, HTTP methods, parameters, request examples, authentication requirements, and response structures.
+
+---
+
+## Error and Recovery Behavior
+
+The application includes handling for common failure scenarios.
+
+Examples include:
+
+### Backend unavailable
+
+The frontend displays an API error instead of remaining in an indefinite loading state.
+
+### Invalid login
+
+The user receives an authentication error message.
+
+### Unauthorized API request
+
+The backend returns an appropriate authorization response.
+
+### Invalid booking information
+
+Frontend and backend validation prevent incomplete data from being submitted.
+
+### Invalid professional ID
+
+The backend validates MongoDB ObjectIds before attempting database operations.
+
+### Booking cancellation
+
+After cancellation, the dashboard refreshes the booking state so that the UI reflects the latest backend result.
+
+---
+
+## Challenges and Solutions
+
+### 1. React Blank Screen / Invalid Hook Call
+
+During integration, the frontend initially displayed a blank page with an invalid React hook error.
+
+The issue was traced to a nested:
+
+```text
+src/node_modules
+```
+
+directory causing an incorrect React module resolution.
+
+The nested dependency folder was removed and the Vite cache was cleared.
+
+The application then loaded correctly.
+
+---
+
+### 2. Backend and Frontend Data Shape Differences
+
+The original frontend was designed around mock professional data while the backend returned MongoDB documents with fields such as:
+
+```text
+_id
+name
+service
+description
+location
+rating
+price
+availability
+```
+
+A mapping layer was added in the frontend so that backend data could be displayed using the existing UI structure.
+
+This allowed the existing reusable components to continue working without duplicating backend data.
+
+---
+
+### 3. Booking Data Shape Differences
+
+The Dashboard originally expected mock booking structures.
+
+It was updated to consume the actual backend booking response, including:
+
+```text
 _id
 professional
 service
@@ -745,182 +1095,209 @@ time
 address
 issue
 status
+```
 
-The Dashboard was updated to consume the actual backend structure.
+This allowed the Dashboard to display real database records.
 
-Challenge 4 — Booking status terminology
+---
+
+### 4. Booking Status Mismatch
 
 The backend uses:
 
+```text
 pending
 confirmed
 completed
 cancelled
+```
 
-while the original frontend displayed:
+while the frontend UI uses more user-friendly status labels.
 
-Requested
-Accepted
-In Progress
-Completed
+A mapping layer was implemented so backend status values can be translated into frontend display states without changing the database enum.
 
-A status mapping was added so that backend values could be displayed using user-friendly frontend labels.
+---
 
-Challenge 5 — Authentication state in navigation
+### 5. Authentication State
 
-The Navbar originally displayed a login option without checking the actual backend authentication state.
+The Navbar originally reflected the static prototype state.
 
-It was updated to check for the JWT token stored in localStorage.
+It was updated to check the authentication token stored in local storage.
 
-When authenticated:
+When the user is logged in:
 
+```text
 Log Out
+```
 
 is displayed.
 
-When logged out:
+When the user logs out, the token and stored user information are removed and the user is returned to the Login page.
 
-Log In
+---
 
-is displayed.
+### 6. Professional Authorization
 
-Logging out removes the stored authentication information and redirects the user to the login page.
+Professional creation is protected by authentication and role checks.
 
-Performance and Integration Practices
+A customer attempting to create a professional receives a permission error.
 
-The application follows several full-stack development practices:
+A professional account can create a professional listing after authentication.
 
-API base URL is configurable through environment variables
-API requests are asynchronous
-Loading states prevent confusing UI during requests
-Error states provide feedback when API calls fail
-Backend validation protects data integrity
-Authentication is enforced on protected endpoints
-Authorization checks prevent unauthorized operations
-Database access is separated into models/controllers
-Frontend UI components remain reusable
-API communication is separated from presentation concerns
-Sensitive environment configuration is excluded from Git
-Production frontend builds are verified before submission
-API Documentation
+This demonstrates that authorization is being enforced by the backend rather than only by the frontend.
 
-Detailed backend API documentation is available in:
+---
 
-fixit-backend/docs/API.md
+### 7. Git Repository Structure
 
-The backend repository also contains:
+During integration, the frontend Git repository was initially initialized at an incorrect parent directory.
 
-test-api.http
+The accidental repository was removed and Git was reinitialized inside the actual frontend project.
 
-which can be used with the VS Code REST Client extension for manual API testing.
+The frontend was then merged with its existing GitHub history and pushed successfully.
 
-GitHub Repositories
-Frontend
+The backend repository was also maintained separately.
+
+---
+
+## GitHub Repositories
+
+### Frontend
 
 https://github.com/Anamkhan0706/fixit-frontend
 
-Backend
+### Backend
 
 https://github.com/Anamkhan0706/fixit-backend
 
-Environment Configuration
+The repositories contain the source code required to run and review the frontend and backend independently.
 
-The frontend uses:
+---
 
-VITE_API_URL=http://localhost:5000/api
+## Current Verified Data Flow
 
-The backend uses:
+The current application has been manually verified with real database data.
 
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+Example professional records include:
 
-Actual credentials and secrets should never be committed to GitHub.
+```text
+Booking Test Electrician
+Service: Electrical
+Price: ₹700
+Location: Bengaluru
 
-Current Integration Status
+John Electrician
+Service: Electrical
+Price: ₹500
+Location: Bengaluru
 
-The Week 4 integration includes:
+John Electrician
+Service: Electrical
+Price: ₹500
+Location: Bengaluru
 
-React frontend connected to Express backend
-MongoDB Atlas database connection
-Real professional data retrieval
-Real professional detail retrieval
-Real customer authentication
-JWT-based authentication
-Protected booking APIs
-Booking creation
-Booking retrieval
-Booking cancellation
-Booking status display
-Client-side validation
-Backend validation
-Loading states
-Error handling
-Authentication-aware navigation
-Logout functionality
-Automated backend testing
-Manual frontend integration testing
-Successful frontend production build
-Week 4 Deliverable
+Rahul Plumber
+Service: Plumbing
+Price: ₹450
+Location: Bengaluru
+```
 
-The Week 4 deliverable consists of the integrated frontend and backend source code.
+The frontend successfully displays these records through the backend API.
 
-The project can be run locally by starting both:
+The following behaviors were verified:
 
-FixIt Backend
-http://localhost:5000
+```text
+GET professionals
+        ↓
+4 professionals displayed
+        ↓
+Plumbing filter
+        ↓
+1 professional displayed
+        ↓
+Electrical filter
+        ↓
+3 professionals displayed
+        ↓
+Search "Rahul"
+        ↓
+Rahul Plumber displayed
+        ↓
+Lowest price sorting
+        ↓
+Rahul Plumber displayed first
+```
 
-and
+---
 
-FixIt Frontend
-http://localhost:5173
+## Development Best Practices
 
-The application uses MongoDB Atlas as the database.
+The project follows several full-stack development practices:
 
-A public deployment is not currently provided; the completed integration was demonstrated and tested locally.
+- Separation of frontend and backend responsibilities
+- RESTful API design
+- Reusable React components
+- Shared React context where appropriate
+- Controller-based backend organization
+- Mongoose models for database structure
+- Middleware for cross-cutting concerns
+- Environment-based configuration
+- Validation before database operations
+- Authentication for protected resources
+- Authorization and ownership checks
+- Consistent JSON API responses
+- HTTP status codes for API outcomes
+- Automated backend testing
+- Production build verification
+- Git version control
+- API documentation
 
-Week 4 Completion Summary
+---
 
-The FixIt frontend and backend have been integrated into a functional full-stack application.
+## Limitations and Future Improvements
 
-The React frontend communicates with the Express REST API using asynchronous Fetch requests. Authentication is handled through JWT-based login, and protected requests include the JWT token in the Authorization header.
+Possible future improvements include:
 
-Professional data is retrieved from MongoDB through the backend and displayed dynamically in the frontend. Customers can open professional details, submit booking requests, view their bookings, and cancel bookings.
+- Deploying the frontend and backend to production hosting
+- Adding real-time booking status updates
+- Adding professional availability scheduling
+- Adding customer reviews and ratings
+- Adding image uploads for professionals
+- Adding pagination for large professional lists
+- Adding advanced search and filtering
+- Adding password reset functionality
+- Adding email notifications
+- Adding booking history and analytics
+- Improving automated frontend test coverage
+- Adding API rate limiting
+- Adding production monitoring and logging
 
-The Dashboard retrieves current booking information from the backend and maps backend booking statuses into user-friendly UI states. Loading and error states have been implemented to provide feedback during asynchronous operations.
+---
 
-The backend provides validation, authentication, authorization, database operations, ownership checks, password hashing, and centralized error handling.
+## Project Outcome
 
-The backend automated test suite contains 25 passing tests, and the frontend production build completes successfully.
+The FixIt application now demonstrates a functional full-stack architecture in which the React frontend communicates with a Node.js/Express backend, which in turn communicates with MongoDB Atlas.
 
-The project is organized into separate frontend and backend repositories with documented setup instructions and API documentation.
+The application supports:
 
-Conclusion
+- Real database-driven professional listings
+- Dynamic search
+- Service filtering
+- Price sorting
+- Professional detail pages
+- JWT authentication
+- Role-based authorization
+- Protected booking APIs
+- Booking creation
+- Booking retrieval
+- Booking cancellation
+- Validation
+- Error handling
+- Loading states
+- Ownership checks
+- Automated API testing
+- Production frontend builds
+- API documentation
+- GitHub-based source control
 
-Week 4 successfully connected the FixIt React frontend with the Node.js/Express backend developed in Week 3.
-
-The application now demonstrates a complete frontend-to-backend data flow:
-
-User Interaction
-      ↓
-React Frontend
-      ↓
-Fetch API
-      ↓
-Express REST API
-      ↓
-Authentication / Validation
-      ↓
-Controllers
-      ↓
-Mongoose
-      ↓
-MongoDB Atlas
-      ↓
-API Response
-      ↓
-React State
-      ↓
-Updated User Interface
-
-This integration transforms the FixIt project from a frontend prototype into a functional full-stack home-services booking application with real database communication, authentication, API-driven data, booking management, validation, error handling, and testing.
+The completed integration provides a clear end-to-end data flow from the user interface through REST APIs and business logic to persistent MongoDB data and back to the frontend.
