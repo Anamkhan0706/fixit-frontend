@@ -12,7 +12,7 @@ import StarRating from "../components/StarRating";
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-function mapProfessional(professional) {
+function mapProfessional(professional, reviews = []) {
   return {
     id: professional._id,
     name: professional.name,
@@ -21,8 +21,8 @@ function mapProfessional(professional) {
       .replace(/\s+/g, "-"),
     categoryLabel: professional.service,
     rating: professional.rating ?? 0,
-    reviewCount: 0,
-    experience: 0,
+    reviewCount: reviews.length,
+    experience: professional.experience ?? 0,
     priceRange: "$",
     hourlyRate: professional.price,
     serviceArea: professional.location,
@@ -34,8 +34,20 @@ function mapProfessional(professional) {
       .join("")
       .slice(0, 2)
       .toUpperCase(),
-    reviews: [],
+    reviews,
     availability: professional.availability,
+  };
+}
+
+function mapReview(review) {
+  return {
+    id: review._id,
+    author: review.customer?.name || "Customer",
+    rating: review.rating,
+    comment: review.comment,
+    date: review.createdAt
+      ? new Date(review.createdAt).toLocaleDateString()
+      : "",
   };
 }
 
@@ -46,8 +58,10 @@ export default function ProfessionalDetail() {
   const { addBooking, loading, error, clearError } = useApp();
 
   const [pro, setPro] = useState(null);
-  const [loadingProfessional, setLoadingProfessional] = useState(true);
-  const [professionalError, setProfessionalError] = useState("");
+  const [loadingProfessional, setLoadingProfessional] =
+    useState(true);
+  const [professionalError, setProfessionalError] =
+    useState("");
 
   const [form, setForm] = useState({
     date: "",
@@ -65,23 +79,64 @@ export default function ProfessionalDetail() {
         setLoadingProfessional(true);
         setProfessionalError("");
 
-        const response = await fetch(
+        const professionalResponse = await fetch(
           `${API_URL}/professionals/${id}`
         );
 
-        const data = await response.json();
+        const professionalData =
+          await professionalResponse.json();
 
-        if (!response.ok) {
+        if (!professionalResponse.ok) {
           throw new Error(
-            data.message || "Failed to fetch professional."
+            professionalData.message ||
+              "Failed to fetch professional."
           );
         }
 
-        if (!data.professional) {
-          throw new Error("Professional data was not returned.");
+        if (!professionalData.professional) {
+          throw new Error(
+            "Professional data was not returned."
+          );
         }
 
-        setPro(mapProfessional(data.professional));
+        let reviews = [];
+
+        try {
+          const token = localStorage.getItem("fixit_token");
+
+          const reviewsResponse = await fetch(
+            `${API_URL}/reviews/professional/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          const reviewsData =
+            await reviewsResponse.json();
+
+          if (reviewsResponse.ok && reviewsData.reviews) {
+            reviews = reviewsData.reviews.map(mapReview);
+          } else {
+            console.error(
+              "Failed to fetch reviews:",
+              reviewsData.message
+            );
+          }
+        } catch (reviewError) {
+          console.error(
+            "Failed to fetch reviews:",
+            reviewError
+          );
+        }
+
+        setPro(
+          mapProfessional(
+            professionalData.professional,
+            reviews
+          )
+        );
       } catch (err) {
         setProfessionalError(
           err.message ||

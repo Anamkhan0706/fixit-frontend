@@ -31,23 +31,26 @@ export default function Login() {
     setApiError("");
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
 
-    const next = {};
+    const nextErrors = {};
 
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-      next.email = "Enter a valid email address.";
+    const email = form.email.trim();
+    const password = form.password;
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      nextErrors.email = "Enter a valid email address.";
     }
 
-    if (form.password.length < 6) {
-      next.password =
+    if (password.length < 6) {
+      nextErrors.password =
         "Password must be at least 6 characters.";
     }
 
-    setErrors(next);
+    setErrors(nextErrors);
 
-    if (Object.keys(next).length > 0) {
+    if (Object.keys(nextErrors).length > 0) {
       return;
     }
 
@@ -61,8 +64,8 @@ export default function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: form.email,
-          password: form.password,
+          email,
+          password,
         }),
       });
 
@@ -70,7 +73,7 @@ export default function Login() {
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Login failed. Please try again."
+          data.message || "Invalid email or password."
         );
       }
 
@@ -80,23 +83,21 @@ export default function Login() {
         );
       }
 
-      window.localStorage.setItem(
-        "fixit_token",
-        data.token
-      );
+      localStorage.setItem("fixit_token", data.token);
 
       if (data.user) {
-        window.localStorage.setItem(
+        localStorage.setItem(
           "fixit_user",
           JSON.stringify(data.user)
         );
       }
 
-      navigate("/dashboard");
-    } catch (err) {
+      // Every user goes to the main FixIt home page after login.
+      navigate("/");
+    } catch (error) {
       setApiError(
-        err.message ||
-          "Unable to log in. Please try again."
+        error.message ||
+          "Unable to log in. Please check your email and password."
       );
     } finally {
       setLoading(false);
@@ -115,7 +116,7 @@ export default function Login() {
         </h1>
 
         <p className="text-gray-500 text-sm mt-1">
-          Log in to manage your bookings.
+          Log in to manage your FixIt account.
         </p>
       </div>
 
@@ -145,10 +146,11 @@ export default function Login() {
             id="email"
             type="email"
             value={form.email}
-            onChange={(e) =>
-              update("email", e.target.value)
+            onChange={(event) =>
+              update("email", event.target.value)
             }
             placeholder="you@example.com"
+            autoComplete="email"
             aria-invalid={!!errors.email}
             className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 ${
               errors.email
@@ -176,10 +178,11 @@ export default function Login() {
             id="password"
             type="password"
             value={form.password}
-            onChange={(e) =>
-              update("password", e.target.value)
+            onChange={(event) =>
+              update("password", event.target.value)
             }
             placeholder="••••••••"
+            autoComplete="current-password"
             aria-invalid={!!errors.password}
             className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 ${
               errors.password
@@ -202,6 +205,20 @@ export default function Login() {
         >
           {loading ? "Logging in..." : "Log In"}
         </button>
+
+        <div className="mt-5 text-center border-t border-gray-100 pt-5">
+          <p className="text-sm text-gray-500">
+            Don't have an account?
+          </p>
+
+          <button
+            type="button"
+            onClick={() => navigate("/register")}
+            className="mt-2 text-sm font-semibold text-brand-600 hover:text-brand-700"
+          >
+            Create a new account
+          </button>
+        </div>
 
         <p className="text-xs text-gray-400 text-center mt-4">
           Your login is securely verified by the FixIt backend.
